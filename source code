@@ -1,0 +1,197 @@
+# source code
+
+#include <SoftwareSerial.h>
+
+#define motorPin1A 2 // Motor 1 pin A
+#define motorPin1B 3 // Motor 1 pin B
+#define motorPin2A 4 // Motor 2 pin A
+#define motorPin2B 5 // Motor 2 pin B
+#define motorPin5A 6 // Motor 5 pin A
+#define motorPin5B 7 // Motor 5 pin B
+#define motorPin6A 8 // Motor 6 pin A
+#define motorPin6B 9 // Motor 6 pin B
+#define redLedPin 12 // Red LED pin
+#define whiteLedPin 13 // White LED pin
+#define buzzerPin A0 // Buzzer pin
+
+SoftwareSerial bluetooth(10, 11); // RX, TX
+
+void setup() {
+  pinMode(motorPin1A, OUTPUT);
+  pinMode(motorPin1B, OUTPUT);
+  pinMode(motorPin2A, OUTPUT);
+  pinMode(motorPin2B, OUTPUT);
+  pinMode(motorPin5A, OUTPUT);
+  pinMode(motorPin5B, OUTPUT);
+  pinMode(motorPin6A, OUTPUT);
+  pinMode(motorPin6B, OUTPUT);
+  pinMode(redLedPin, OUTPUT);
+  pinMode(whiteLedPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+  
+  bluetooth.begin(9600); // Bluetooth serial baud rate
+}
+
+void loop() {
+  if (bluetooth.available() > 0) {
+    char command = bluetooth.read(); // Read command from Bluetooth
+    
+    // Check the command and execute corresponding action
+    switch (command) {
+      case 'F': // Forward
+        forward();
+        break;
+      case 'B': // Backward
+        backward();
+        break;
+      case 'L': // Left
+        left();
+        break;
+      case 'R': // Right
+        right();
+        break;
+      case 'G': // Forward Left
+        forwardLeft();
+        break;
+      case 'I': // Forward Right
+        forwardRight();
+        break;
+      case 'H': // Backward Left
+        backwardLeft();
+        break;
+      case 'J': // Backward Right
+        backwardRight();
+        break;
+      case 'S': // Stop
+        stop();
+        break;
+      case 'D': // Stop All
+        stopAll();
+        break;
+      case 'V': // Motor 5 On
+        motor5On();
+        break;
+      case 'v': // Motor 5 Off
+        motor5Off();
+        break;
+      case 'X': // Motor 6 On
+        motor6On();
+        break;
+      case 'x': // Motor 6 Off
+        motor6Off();
+        break;
+      case 'W': // Front Lights On
+        frontLightsOn();
+        break;
+      case 'w': // Front Lights Off
+        frontLightsOff();
+        break;
+    }
+  }
+}
+
+void forward() {
+  analogWrite(motorPin1A, 255);
+  analogWrite(motorPin1B, LOW);
+  analogWrite(motorPin2A, 255);
+  analogWrite(motorPin2B, LOW);
+}
+
+void backward() {
+  analogWrite(motorPin1A, LOW);
+  analogWrite(motorPin1B, 255);
+  analogWrite(motorPin2A, LOW);
+  analogWrite(motorPin2B, 255);
+  redLightAndBuzzerOn();
+}
+
+void left() {
+  analogWrite(motorPin1A, LOW);
+  analogWrite(motorPin1B, 255);
+  analogWrite(motorPin2A, 255);
+  analogWrite(motorPin2B, LOW);
+}
+
+void right() {
+  analogWrite(motorPin1A, 255);
+  analogWrite(motorPin1B, LOW);
+  analogWrite(motorPin2A, LOW);
+  analogWrite(motorPin2B, 255);
+}
+
+void forwardLeft() {
+  analogWrite(motorPin1A, 191);
+  analogWrite(motorPin1B, LOW);
+  analogWrite(motorPin2A, 255);
+  analogWrite(motorPin2B, LOW);
+}
+
+void forwardRight() {
+  analogWrite(motorPin1A, 255);
+  analogWrite(motorPin1B, LOW);
+  analogWrite(motorPin2A, 191);
+  analogWrite(motorPin2B, LOW);
+}
+
+void backwardLeft() {
+  analogWrite(motorPin1A, LOW);
+  analogWrite(motorPin1B, 191);
+  analogWrite(motorPin2A, LOW);
+  analogWrite(motorPin2B, 255);
+  redLightAndBuzzerOn();
+}
+
+void backwardRight() {
+  analogWrite(motorPin1A, LOW);
+  analogWrite(motorPin1B, 255);
+  analogWrite(motorPin2A, LOW);
+  analogWrite(motorPin2B, 191);
+  redLightAndBuzzerOn();
+}
+
+void stop() {
+  analogWrite(motorPin1A, LOW);
+  analogWrite(motorPin1B, LOW);
+  analogWrite(motorPin2A, LOW);
+  analogWrite(motorPin2B, LOW);
+}
+
+void stopAll() {
+  stop();
+}
+
+void motor5On() {
+  digitalWrite(motorPin5A, HIGH);
+  digitalWrite(motorPin5B, LOW);
+}
+
+void motor5Off() {
+  digitalWrite(motorPin5A, LOW);
+  digitalWrite(motorPin5B, LOW);
+}
+
+void motor6On() {
+  digitalWrite(motorPin6A, HIGH);
+  digitalWrite(motorPin6B, LOW);
+}
+
+void motor6Off() {
+  digitalWrite(motorPin6A, LOW);
+  digitalWrite(motorPin6B, LOW);
+}
+
+void frontLightsOn() {
+  digitalWrite(whiteLedPin, HIGH);
+}
+
+void frontLightsOff() {
+  digitalWrite(whiteLedPin, LOW);
+}
+
+void redLightAndBuzzerOn() {
+  digitalWrite(redLedPin, HIGH);
+  tone(buzzerPin, 1000); // Beep sound
+  delay(500);
+  digitalWrite(redLedPin, LOW);
+  noTone(buzzerPin);
+}
